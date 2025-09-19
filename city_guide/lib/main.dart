@@ -11,6 +11,7 @@ class CityGuideApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: "City Guide",
       theme: ThemeData(primarySwatch: Colors.indigo, useMaterial3: true),
       home: const HomeScreen(),
