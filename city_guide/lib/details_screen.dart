@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "home_screen.dart";
+import "models/attraction.dart";
 
 class DetailsScreen extends StatelessWidget {
   final Attraction attraction;

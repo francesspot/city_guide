@@ -1,8 +1,9 @@
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "home_screen.dart";
 
 void main() {
-  runApp(const CityGuideApp());
+  runApp(const ProviderScope(child: CityGuideApp()));
 }
 
 class CityGuideApp extends StatelessWidget {

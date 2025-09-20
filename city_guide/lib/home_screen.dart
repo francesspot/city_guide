@@ -1,41 +1,14 @@
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "details_screen.dart";
+import "providers/attraction_provider.dart";
 
-class Attraction {
-  final String name;
-  final String description;
-  final String category;
-
-  const Attraction({
-    required this.name,
-    required this.description,
-    required this.category,
-  });
-}
-
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  final List<Attraction> attrList = const [
-    Attraction(
-      name: "Muzeum Narodowe",
-      description: "Jedno z największych muzeów sztuki w Polsce.",
-      category: "Muzeum",
-    ),
-    Attraction(
-      name: "Park Szczytnicki",
-      description: "Duży park miejski idealny na spacer i relaks.",
-      category: "Park",
-    ),
-    Attraction(
-      name: "Restauracja Pod Złotym Psem",
-      description: "Popularna restauracja w centrum miasta.",
-      category: "Restauracja",
-    ),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final attrList = ref.watch(attractionProvider);
     return Scaffold(
       appBar: AppBar(title: const Text("City Guide")),
       body: ListView.builder(
