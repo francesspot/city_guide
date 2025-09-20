@@ -1,8 +1,9 @@
 import "package:flutter/material.dart";
-import "models/attraction.dart";
+import "features/models/attraction.dart";
 
 class DetailsScreen extends StatelessWidget {
   final Attraction attraction;
+  static const route = "/place";
 
   const DetailsScreen({super.key, required this.attraction});
 

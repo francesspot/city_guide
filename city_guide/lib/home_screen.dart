@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "details_screen.dart";
-import "providers/attraction_provider.dart";
+import "features/providers/attraction_provider.dart";
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});

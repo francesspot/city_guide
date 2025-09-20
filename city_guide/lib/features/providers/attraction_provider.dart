@@ -5,16 +5,19 @@ import "../models/attraction.dart";
 final attractionProvider = Provider<List<Attraction>>((ref) {
   return const [
     Attraction(
+      id: 1,
       name: "Muzeum Narodowe",
       description: "Jedno z największych muzeów sztuki w Polsce.",
       category: "Muzeum",
     ),
     Attraction(
+      id: 2,
       name: "Park Szczytnicki",
       description: "Duży park miejski idealny na spacer i relaks.",
       category: "Park",
     ),
     Attraction(
+      id: 3,
       name: "Restauracja Pod Złotym Psem",
       description: "Popularna restauracja w centrum miasta.",
       category: "Restauracja",
