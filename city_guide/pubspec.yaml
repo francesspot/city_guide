@@ -94,7 +94,7 @@ flutter:
 builders:
   build_runner:
     options:
-      # Ignoruj określone pliki podczas build
       build_filters:
         - exclude: "**/*.g.dart"
         - exclude: "**/*.freezed.dart"
+        - exclude: "**/*.swift"

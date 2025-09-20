@@ -5,22 +5,28 @@ import "../models/attraction.dart";
 final attractionProvider = Provider<List<Attraction>>((ref) {
   return const [
     Attraction(
-      id: 1,
+      id: "1",
       name: "Muzeum Narodowe",
       description: "Jedno z największych muzeów sztuki w Polsce.",
       category: "Muzeum",
+      lat: 51.109,
+      lng: 17.044,
     ),
     Attraction(
-      id: 2,
+      id: "2",
       name: "Park Szczytnicki",
       description: "Duży park miejski idealny na spacer i relaks.",
       category: "Park",
+      lat: 51.1166,
+      lng: 17.0779,
     ),
     Attraction(
-      id: 3,
+      id: "3",
       name: "Restauracja Pod Złotym Psem",
       description: "Popularna restauracja w centrum miasta.",
       category: "Restauracja",
+      lat: 51.109,
+      lng: 17.033,
     ),
   ];
 });
@@ -36,9 +42,9 @@ final filteredAttractionProvider = Provider<List<Attraction>>((ref) {
   } else {
     return attractions
         .where(
-          (attraction) =>
-              attraction.name.toLowerCase().contains(query) ||
-              attraction.category.toLowerCase().contains(query),
+          (a) =>
+              a.name.toLowerCase().contains(query) ||
+              a.category.toLowerCase().contains(query),
         )
         .toList();
   }

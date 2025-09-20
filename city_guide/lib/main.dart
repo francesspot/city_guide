@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "home_screen.dart";
+import "features/routing/app_router.dart";
 
 void main() {
   runApp(const ProviderScope(child: CityGuideApp()));
@@ -11,11 +11,11 @@ class CityGuideApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: "City Guide",
-      theme: ThemeData(primarySwatch: Colors.indigo, useMaterial3: true),
-      home: const HomeScreen(),
+      theme: ThemeData(primarySwatch: Colors.indigo),
+      routerConfig: goRouter,
     );
   }
 }

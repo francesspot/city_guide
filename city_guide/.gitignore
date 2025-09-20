@@ -57,6 +57,7 @@ app.*.map.json
 *.g.dart
 *.freezed.dart
 *.gr.dart
+*.swift
 
 # OS-specific
 .DS_Store

@@ -1,7 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "details_screen.dart";
+import "package:go_router/go_router.dart";
 import "features/providers/attraction_provider.dart";
+import "details_screen.dart";
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -45,13 +46,10 @@ class HomeScreen extends ConsumerWidget {
                   title: Text(attraction.name),
                   subtitle: Text(attraction.category),
                   trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    await GoRouter.of(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => DetailsScreen(attraction: attraction),
-                      ),
-                    );
+                    ).push("${DetailsScreen.route}/${attraction.id}");
                   },
                 );
               },
