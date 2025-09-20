@@ -1,4 +1,5 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_riverpod/legacy.dart";
 import "../models/attraction.dart";
 
 final attractionProvider = Provider<List<Attraction>>((ref) {
@@ -19,4 +20,23 @@ final attractionProvider = Provider<List<Attraction>>((ref) {
       category: "Restauracja",
     ),
   ];
+});
+
+final searchQueryProvider = StateProvider<String>((ref) => "");
+
+final filteredAttractionProvider = Provider<List<Attraction>>((ref) {
+  final query = ref.watch(searchQueryProvider).toLowerCase();
+  final attractions = ref.watch(attractionProvider);
+
+  if (query.isEmpty) {
+    return attractions;
+  } else {
+    return attractions
+        .where(
+          (attraction) =>
+              attraction.name.toLowerCase().contains(query) ||
+              attraction.category.toLowerCase().contains(query),
+        )
+        .toList();
+  }
 });

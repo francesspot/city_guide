@@ -43,3 +43,27 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Build-related
+/build/
+/android/build/
+/ios/build/
+/lib/generated_plugin_registrant.dart
+
+# build_runner
+.dart_tool/
+*.dart.js
+*.part
+*.g.dart
+*.freezed.dart
+*.gr.dart
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
