@@ -1,6 +1,7 @@
 import "package:go_router/go_router.dart";
 import "../../home_screen.dart";
 import "../../details_screen.dart";
+import "../../map_screen.dart";
 
 final goRouter = GoRouter(
   initialLocation: "/",
@@ -13,5 +14,6 @@ final goRouter = GoRouter(
         return DetailsScreen(id: id);
       },
     ),
+    GoRoute(path: '/map', builder: (context, state) => const MapScreen()),
   ],
 );

@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_map/flutter_map.dart";
+import "package:latlong2/latlong.dart";
 import "features/providers/attraction_provider.dart";
 
 class DetailsScreen extends ConsumerWidget {
@@ -39,8 +41,40 @@ class DetailsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              "Lokalizacja: (${attraction.lat}, ${attraction.lng})",
+              "Współrzędne lokalizacji: (${attraction.lat}, ${attraction.lng})",
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 400,
+              child: FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(attraction.lat, attraction.lng),
+                  initialZoom: 13,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    subdomains: ['a', 'b', 'c'],
+                    userAgentPackageName: 'com.example.city_guide',
+                  ),
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: LatLng(attraction.lat, attraction.lng),
+                        width: 40,
+                        height: 40,
+                        child: const Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                          size: 36,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

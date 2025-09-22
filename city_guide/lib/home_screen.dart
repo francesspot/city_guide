@@ -35,6 +35,14 @@ class HomeScreen extends ConsumerWidget {
             },
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () {
+              context.push('/map');
+            },
+          ),
+        ],
       ),
       body: attrList.isEmpty
           ? const Center(child: Text("Brak wyników wyszukiwania"))
