@@ -11,7 +11,7 @@ final goRouter = GoRouter(
       path: "${DetailsScreen.route}/:id",
       builder: (context, state) {
         final id = state.pathParameters["id"]!;
-        return DetailsScreen(id: id);
+        return DetailsScreen(xid: id);
       },
     ),
     GoRoute(path: '/map', builder: (context, state) => const MapScreen()),

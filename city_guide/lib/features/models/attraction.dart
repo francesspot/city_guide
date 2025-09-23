@@ -1,17 +1,19 @@
-class Attraction {
-  final String id;
-  final String name;
-  final String description;
-  final String category;
-  final double lat;
-  final double lng;
+import "package:freezed_annotation/freezed_annotation.dart";
 
-  const Attraction({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.category,
-    required this.lat,
-    required this.lng,
-  });
+part "attraction.freezed.dart";
+part "attraction.g.dart";
+
+@freezed
+abstract class Attraction with _$Attraction {
+  const factory Attraction({
+    required String xid,
+    required String name,
+    @Default("") String kinds,
+    @Default("Brak opisu") String description,
+    required double lat,
+    required double lon,
+  }) = _Attraction;
+
+  factory Attraction.fromJson(Map<String, Object?> json) =>
+      _$AttractionFromJson(json);
 }

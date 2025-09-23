@@ -1,6 +1,6 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_riverpod/legacy.dart";
-import "../models/attraction.dart";
+import "attraction_local.dart";
 
 final attractionProvider = Provider<List<Attraction>>((ref) {
   return const [
