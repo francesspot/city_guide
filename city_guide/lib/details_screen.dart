@@ -2,7 +2,11 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_map/flutter_map.dart";
 import "package:latlong2/latlong.dart";
+import "package:drift/drift.dart" hide Column;
 import "features/providers/attraction_details_provider.dart";
+import "features/providers/favorite_places_provider.dart";
+import "features/providers/current_city_provider.dart";
+import "features/database/favorite_places_database.dart";
 
 class DetailsScreen extends ConsumerWidget {
   final String xid;
@@ -15,7 +19,71 @@ class DetailsScreen extends ConsumerWidget {
     final attractionAsync = ref.watch(attractionDetailsProvider(xid));
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Szczegóły atrakcji")),
+      appBar: AppBar(
+        title: const Text("Szczegóły atrakcji"),
+        actions: [
+          attractionAsync.when(
+            loading: () => const SizedBox.shrink(),
+            error: (error, stack) => const SizedBox.shrink(),
+            data: (attraction) {
+              final favoritesAsync = ref.watch(favoritesProvider);
+
+              return favoritesAsync.when(
+                loading: () => const Icon(Icons.favorite_border),
+                error: (e, _) => const Icon(Icons.error),
+                data: (favorites) {
+                  final isFav = favorites.any(
+                    (place) => place.xid == attraction.xid,
+                  );
+
+                  return IconButton(
+                    icon: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      color: isFav ? Colors.red : null,
+                    ),
+                    onPressed: () async {
+                      final currentCity = ref.read(currentCityProvider);
+                      final repo = ref.read(favoritesRepositoryProvider);
+
+                      final entry = FavoritePlacesCompanion(
+                        xid: Value(attraction.xid),
+                        name: Value(attraction.name),
+                        city: Value(currentCity.isNotEmpty ? currentCity : ''),
+                        kinds: Value(
+                          attraction.kinds.isNotEmpty ? attraction.kinds : null,
+                        ),
+                        description: Value(
+                          attraction.description.isNotEmpty
+                              ? attraction.description
+                              : null,
+                        ),
+                        lat: Value(attraction.lat),
+                        lon: Value(attraction.lon),
+                      );
+
+                      final isNowFavorite = await repo.toggleFavorite(entry);
+
+                      if (!context.mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text(
+                            isNowFavorite
+                                ? "❤️ Dodano do ulubionych"
+                                : "❌ Usunięto z ulubionych",
+                          ),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: attractionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
@@ -32,6 +100,8 @@ class DetailsScreen extends ConsumerWidget {
           ),
         ),
         data: (attraction) {
+          final currentCity = ref.watch(currentCityProvider);
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -45,7 +115,7 @@ class DetailsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 if (attraction.kinds.isNotEmpty &&
-                    attraction.kinds != "Unknown")
+                    attraction.kinds != "Brak kategorii")
                   Text(
                     "Kategorie: ${attraction.kinds.replaceAll(',', ', ')}",
                     style: Theme.of(
@@ -68,18 +138,25 @@ class DetailsScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                Text("Miasto:", style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                Text(
+                  currentCity.isNotEmpty ? currentCity : 'Nieznane miasto',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 8),
                 Text(
                   "Lokalizacja:",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Szerokość geograficzna: ${attraction.lat.toStringAsFixed(4)}°",
+                  "Szerokość geograficzna: ${attraction.lat.toStringAsFixed(2).replaceAll('.', ',')}°",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Text(
-                  "Długość geograficzna: ${attraction.lon.toStringAsFixed(4)}°",
+                  "Długość geograficzna: ${attraction.lon.toStringAsFixed(2).replaceAll('.', ',')}°",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 24),

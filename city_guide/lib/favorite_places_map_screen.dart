@@ -1,42 +1,27 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_map/flutter_map.dart";
-import "package:latlong2/latlong.dart";
 import "package:go_router/go_router.dart";
-import "features/providers/city_attractions_provider.dart";
-import "features/providers/current_city_provider.dart";
-import "features/providers/radius_provider.dart";
-import "details_screen.dart";
+import "package:latlong2/latlong.dart";
+import "favorite_places_details_screen.dart";
+import "features/providers/favorite_places_provider.dart";
 
-class MapScreen extends ConsumerWidget {
-  const MapScreen({super.key});
+class FavoritePlacesMapScreen extends ConsumerWidget {
+  const FavoritePlacesMapScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentCity = ref.watch(currentCityProvider);
-    final radius = ref.watch(radiusProvider);
-    final attractionsAsync = ref.watch(
-      cityAttractionsProvider((currentCity, radius)),
-    );
+    final favoritesAsync = ref.watch(favoritesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Mapa atrakcji - $currentCity"),
-            Text(
-              "Promień: ${(radius / 1000).toStringAsFixed(1)} km",
-              style: const TextStyle(fontSize: 12),
-            ),
-          ],
-        ),
+        title: const Text("Mapa ulubionych miejsc"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: attractionsAsync.when(
+      body: favoritesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
@@ -45,32 +30,33 @@ class MapScreen extends ConsumerWidget {
               Text('Błąd: $error'),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => ref.invalidate(
-                  cityAttractionsProvider((currentCity, radius)),
-                ),
+                onPressed: () => ref.invalidate(favoritesProvider),
                 child: const Text('Spróbuj ponownie'),
               ),
             ],
           ),
         ),
-        data: (attractions) {
-          if (attractions.isEmpty) {
+        data: (favorites) {
+          if (favorites.isEmpty) {
             return const Center(
-              child: Text("Brak atrakcji do wyświetlenia na mapie"),
+              child: Text("Brak ulubionych miejsc do wyświetlenia na mapie"),
             );
           }
 
+          final cities = favorites.map((place) => place.city).toSet();
+          final hasMultipleCities = cities.length > 1;
+
           final avgLat =
-              attractions.map((a) => a.lat).reduce((a, b) => a + b) /
-              attractions.length;
+              favorites.map((a) => a.lat).reduce((a, b) => a + b) /
+              favorites.length;
           final avgLon =
-              attractions.map((a) => a.lon).reduce((a, b) => a + b) /
-              attractions.length;
+              favorites.map((a) => a.lon).reduce((a, b) => a + b) /
+              favorites.length;
 
           return FlutterMap(
             options: MapOptions(
               initialCenter: LatLng(avgLat, avgLon),
-              initialZoom: 12.0,
+              initialZoom: hasMultipleCities ? 6.0 : 12.0,
             ),
             children: [
               TileLayer(
@@ -78,11 +64,11 @@ class MapScreen extends ConsumerWidget {
                 userAgentPackageName: 'com.example.city_guide',
               ),
               MarkerLayer(
-                markers: attractions.map((attraction) {
+                markers: favorites.map((place) {
                   return Marker(
                     width: 40,
                     height: 40,
-                    point: LatLng(attraction.lat, attraction.lon),
+                    point: LatLng(place.lat, place.lon),
                     child: IconButton(
                       icon: const Icon(
                         Icons.location_pin,
@@ -93,15 +79,15 @@ class MapScreen extends ConsumerWidget {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: Text(attraction.name),
+                            title: Text(place.name),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(attraction.kinds.split(',').first),
+                                Text(place.kinds ?? 'Brak kategorii'),
                                 const SizedBox(height: 8),
                                 Text(
-                                  "Miasto: $currentCity",
+                                  "Miasto: ${place.city.isNotEmpty ? place.city : 'Nieznane'}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey,
@@ -114,7 +100,8 @@ class MapScreen extends ConsumerWidget {
                                 onPressed: () {
                                   Navigator.pop(context);
                                   context.push(
-                                    "${DetailsScreen.route}/${attraction.xid}",
+                                    "${FavoritePlacesDetailsScreen.route}/${place.xid}",
+                                    extra: place,
                                   );
                                 },
                                 child: const Text('Szczegóły'),

@@ -16,9 +16,22 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  bool clearButtonVisible = false;
+  bool isSearchBarHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        clearButtonVisible = _searchController.text.isNotEmpty;
+      });
+    });
+  }
 
   @override
   void dispose() {
+    _searchController.removeListener(() {});
     _searchController.dispose();
     super.dispose();
   }
@@ -27,7 +40,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final cityName = _searchController.text.trim();
     if (cityName.isNotEmpty) {
       ref.read(currentCityProvider.notifier).state = cityName;
+      ref.read(radiusProvider.notifier).state = 1000;
     }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    ref.read(currentCityProvider.notifier).state = '';
   }
 
   @override
@@ -41,32 +60,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.indigo,
-        title: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: "Wpisz nazwę miasta...",
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              hintStyle: const TextStyle(color: Colors.grey),
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: _searchCity,
-              ),
+        title: MouseRegion(
+          onEnter: (_) => setState(() => isSearchBarHovered = true),
+          onExit: (_) => setState(() => isSearchBarHovered = false),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
             ),
-            style: const TextStyle(color: Colors.black, fontSize: 16),
-            onSubmitted: (_) => _searchCity(),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: "Wpisz nazwę miasta...",
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                hintStyle: const TextStyle(color: Colors.grey),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (clearButtonVisible && isSearchBarHovered)
+                      IconButton(
+                        icon: const Icon(
+                          Icons.clear,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                        onPressed: _clearSearch,
+                      ),
+                    IconButton(
+                      icon: const Icon(Icons.search, color: Colors.grey),
+                      onPressed: _searchCity,
+                    ),
+                  ],
+                ),
+              ),
+              style: const TextStyle(color: Colors.black, fontSize: 16),
+              onSubmitted: (_) => _searchCity(),
+            ),
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              context.push('/favorites');
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.map),
             onPressed: () {
@@ -91,7 +134,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Promień wyszukiwania: ${(radius / 1000).toStringAsFixed(1)} km",
+                        "Promień wyszukiwania: ${(radius / 1000).toStringAsFixed(1).replaceAll('.', ',')} km",
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -103,7 +146,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         min: 1000,
                         max: 10000,
                         divisions: 9,
-                        label: "${(radius / 1000).toStringAsFixed(1)} km",
+                        label:
+                            "${(radius / 1000).toStringAsFixed(1).replaceAll('.', ',')} km",
                         onChanged: (value) {
                           final newRadius = value.toInt();
                           ref.read(radiusProvider.notifier).state = newRadius;
