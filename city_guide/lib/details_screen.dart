@@ -20,7 +20,12 @@ class DetailsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Szczegóły atrakcji"),
+        title: Text(
+          "Szczegóły atrakcji",
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+          ),
+        ),
         actions: [
           attractionAsync.when(
             loading: () => const SizedBox.shrink(),
@@ -90,7 +95,10 @@ class DetailsScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Błąd ładowania: $error'),
+              Text(
+                'Błąd ładowania: $error',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(attractionDetailsProvider(xid)),
@@ -109,18 +117,16 @@ class DetailsScreen extends ConsumerWidget {
               children: [
                 Text(
                   attraction.name,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),
                 if (attraction.kinds.isNotEmpty &&
                     attraction.kinds != "Brak kategorii")
                   Text(
                     "Kategorie: ${attraction.kinds.replaceAll(',', ', ')}",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleMedium?.copyWith(color: Colors.grey[700]),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.tertiary,
+                    ),
                   ),
                 const SizedBox(height: 16),
                 if (attraction.description.isNotEmpty)
@@ -161,7 +167,7 @@ class DetailsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
-                  height: 300,
+                  height: 350,
                   child: FlutterMap(
                     options: MapOptions(
                       initialCenter: LatLng(attraction.lat, attraction.lon),

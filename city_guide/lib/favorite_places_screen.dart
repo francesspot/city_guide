@@ -63,7 +63,17 @@ class FavoritePlacesScreen extends ConsumerWidget {
                     return ListTile(
                       leading: const Icon(Icons.place, color: Colors.red),
                       title: Text(place.name),
-                      subtitle: Text(place.kinds ?? 'Brak kategorii'),
+                      subtitle: Text(
+                        place.kinds != null
+                            ? place.kinds!
+                                  .split(',')
+                                  .map((e) => e.trim())
+                                  .join(', ')
+                            : 'Brak kategorii',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () async {

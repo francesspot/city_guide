@@ -4,6 +4,8 @@ import "package:go_router/go_router.dart";
 import "features/providers/city_attractions_provider.dart";
 import "features/providers/current_city_provider.dart";
 import "features/providers/radius_provider.dart";
+import "features/repositories/local_theme_repository.dart";
+import "features/themes/theme_notifier.dart";
 import "details_screen.dart";
 import "features/models/attraction.dart";
 
@@ -22,16 +24,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
-      setState(() {
-        clearButtonVisible = _searchController.text.isNotEmpty;
-      });
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      clearButtonVisible = _searchController.text.isNotEmpty;
     });
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(() {});
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
@@ -56,20 +60,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final attractionsAsync = ref.watch(
       cityAttractionsProvider((currentCity, radius)),
     );
+    final themeAsync = ref.watch(themeNotifierProvider);
+
+    final inputFill =
+        Theme.of(context).inputDecorationTheme.fillColor ??
+        (Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF2A2A2A)
+            : Colors.grey[100]);
+
+    final bool isLight = Theme.of(context).brightness == Brightness.light;
+    final iconColorForSearchField = isLight
+        ? Colors.grey
+        : (Theme.of(context).iconTheme.color ?? Colors.white);
+
+    final appBarIconColor =
+        Theme.of(context).appBarTheme.iconTheme?.color ??
+        Theme.of(context).iconTheme.color ??
+        (isLight ? Colors.white : Colors.white);
+
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ??
+        (isLight ? Colors.black : Colors.white);
+
+    final sliderPrimary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.indigo,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: MouseRegion(
           onEnter: (_) => setState(() => isSearchBarHovered = true),
           onExit: (_) => setState(() => isSearchBarHovered = false),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: inputFill,
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(
               controller: _searchController,
+              cursorColor:
+                  Theme.of(context).textSelectionTheme.cursorColor ??
+                  Theme.of(context).colorScheme.primary,
               decoration: InputDecoration(
                 hintText: "Wpisz nazwę miasta...",
                 border: InputBorder.none,
@@ -77,41 +107,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   horizontal: 16,
                   vertical: 12,
                 ),
-                hintStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                hintStyle:
+                    Theme.of(context).inputDecorationTheme.hintStyle ??
+                    TextStyle(
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                    ),
+                prefixIcon: Icon(Icons.search, color: iconColorForSearchField),
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (clearButtonVisible && isSearchBarHovered)
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.clear,
-                          color: Colors.grey,
+                          color: iconColorForSearchField,
                           size: 20,
                         ),
                         onPressed: _clearSearch,
                       ),
                     IconButton(
-                      icon: const Icon(Icons.search, color: Colors.grey),
+                      icon: Icon(Icons.search, color: iconColorForSearchField),
                       onPressed: _searchCity,
                     ),
                   ],
                 ),
               ),
-              style: const TextStyle(color: Colors.black, fontSize: 16),
+              style: TextStyle(color: textColor, fontSize: 16),
               onSubmitted: (_) => _searchCity(),
             ),
           ),
         ),
         actions: [
+          switch (themeAsync) {
+            AsyncData(value: final currentTheme) => IconButton(
+              icon: Icon(
+                currentTheme == AppTheme.light
+                    ? Icons.light_mode
+                    : currentTheme == AppTheme.dark
+                    ? Icons.dark_mode
+                    : Icons.auto_mode,
+              ),
+              onPressed: () =>
+                  ref.read(themeNotifierProvider.notifier).toggleTheme(),
+            ),
+            AsyncLoading() => const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+            AsyncError() => IconButton(
+              icon: const Icon(Icons.error),
+              onPressed: () => ref.invalidate(themeNotifierProvider),
+            ),
+          },
           IconButton(
-            icon: const Icon(Icons.favorite),
+            icon: Icon(Icons.favorite, color: appBarIconColor),
             onPressed: () {
               context.push('/favorites');
             },
           ),
           IconButton(
-            icon: const Icon(Icons.map),
+            icon: Icon(Icons.map, color: appBarIconColor),
             onPressed: () {
               if (currentCity.isNotEmpty) {
                 context.push('/map');
@@ -135,30 +194,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     children: [
                       Text(
                         "Promień wyszukiwania: ${(radius / 1000).toStringAsFixed(1).replaceAll('.', ',')} km",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ) ??
+                            const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 8),
-                      Slider(
-                        value: radius.toDouble(),
-                        min: 1000,
-                        max: 10000,
-                        divisions: 9,
-                        label:
-                            "${(radius / 1000).toStringAsFixed(1).replaceAll('.', ',')} km",
-                        onChanged: (value) {
-                          final newRadius = value.toInt();
-                          ref.read(radiusProvider.notifier).state = newRadius;
-                          ref.invalidate(
-                            cityAttractionsProvider((currentCity, newRadius)),
-                          );
-                        },
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          thumbColor: sliderPrimary,
+                          activeTrackColor: sliderPrimary,
+                          inactiveTrackColor: sliderPrimary.withAlpha(60),
+                          overlayColor: sliderPrimary.withAlpha(36),
+                          valueIndicatorColor: sliderPrimary,
+                          trackHeight: 4.0,
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 10.0,
+                          ),
+                          overlayShape: const RoundSliderOverlayShape(
+                            overlayRadius: 18.0,
+                          ),
+                        ),
+                        child: Slider(
+                          value: radius.toDouble(),
+                          min: 1000,
+                          max: 10000,
+                          divisions: 9,
+                          label:
+                              "${(radius / 1000).toStringAsFixed(1).replaceAll('.', ',')} km",
+                          onChanged: (value) {
+                            final newRadius = value.toInt();
+                            ref.read(radiusProvider.notifier).state = newRadius;
+                            ref.invalidate(
+                              cityAttractionsProvider((currentCity, newRadius)),
+                            );
+                          },
+                        ),
                       ),
                       Text(
                         "1 km – 10 km",
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        style:
+                            Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(fontSize: 12) ??
+                            TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -172,8 +255,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       onRetry: _searchCity,
                     ),
                     data: (attractions) => attractions.isEmpty
-                        ? const Center(
-                            child: Text("Brak atrakcji dla tego miasta"),
+                        ? Center(
+                            child: Text(
+                              "Brak atrakcji dla tego miasta",
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
                           )
                         : _AttractionsList(attractions: attractions),
                   ),
@@ -189,10 +275,12 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Text(
         "Wpisz nazwę miasta i wciśnij Enter",
-        style: TextStyle(fontSize: 18),
+        style:
+            Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18) ??
+            const TextStyle(fontSize: 18),
       ),
     );
   }
@@ -217,7 +305,7 @@ class _ErrorState extends StatelessWidget {
             Text(
               'Błąd: $message',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -244,12 +332,21 @@ class _AttractionsList extends StatelessWidget {
         final attraction = attractions[index];
         return ListTile(
           leading: const Icon(Icons.place, color: Colors.red),
-          title: Text(attraction.name),
-          subtitle: Text(
-            attraction.kinds.split(',').first,
-            style: const TextStyle(color: Colors.grey),
+          title: Text(
+            attraction.name,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+          subtitle: Text(
+            attraction.kinds.split(',').map((e) => e.trim()).join(', '),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onTap: () {
             context.push("${DetailsScreen.route}/${attraction.xid}");
           },

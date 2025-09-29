@@ -86,9 +86,11 @@ class FavoritePlacesDetailsScreen extends ConsumerWidget {
             if ((place.kinds ?? '').isNotEmpty)
               Text(
                 "Kategorie: ${place.kinds?.replaceAll(',', ', ') ?? 'Brak kategorii'}",
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(color: Colors.grey[700]),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
               ),
             const SizedBox(height: 16),
             if ((place.description ?? '').isNotEmpty)
@@ -117,16 +119,16 @@ class FavoritePlacesDetailsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              "Szerokość geograficzna: ${place.lat.toStringAsFixed(2)}°",
+              "Szerokość geograficzna: ${place.lat.toStringAsFixed(2).replaceAll('.', ',')}°",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Text(
-              "Długość geograficzna: ${place.lon.toStringAsFixed(2)}°",
+              "Długość geograficzna: ${place.lon.toStringAsFixed(2).replaceAll('.', ',')}°",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
             SizedBox(
-              height: 300,
+              height: 350,
               child: FlutterMap(
                 options: MapOptions(
                   initialCenter: LatLng(place.lat, place.lon),
