@@ -3,7 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_map/flutter_map.dart";
 import "package:latlong2/latlong.dart";
 import "package:go_router/go_router.dart";
-import "features/providers/city_attractions_provider.dart";
+import "features/providers/filter_providers.dart";
 import "features/providers/current_city_provider.dart";
 import "features/providers/radius_provider.dart";
 import "details_screen.dart";
@@ -15,9 +15,7 @@ class MapScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentCity = ref.watch(currentCityProvider);
     final radius = ref.watch(radiusProvider);
-    final attractionsAsync = ref.watch(
-      cityAttractionsProvider((currentCity, radius)),
-    );
+    final attractionsAsync = ref.watch(filteredCityAttractionsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,9 +43,9 @@ class MapScreen extends ConsumerWidget {
               Text('Błąd: $error'),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => ref.invalidate(
-                  cityAttractionsProvider((currentCity, radius)),
-                ),
+                onPressed: () {
+                  ref.invalidate(filteredCityAttractionsProvider);
+                },
                 child: const Text('Spróbuj ponownie'),
               ),
             ],
@@ -79,6 +77,15 @@ class MapScreen extends ConsumerWidget {
               ),
               MarkerLayer(
                 markers: attractions.map((attraction) {
+                  final kindsList = attraction.kinds
+                      .split(',')
+                      .map((e) => e.trim())
+                      .where((s) => s.isNotEmpty)
+                      .toList();
+                  final kindsText = kindsList.isNotEmpty
+                      ? kindsList.join(', ')
+                      : 'Brak kategorii';
+
                   return Marker(
                     width: 40,
                     height: 40,
@@ -98,7 +105,7 @@ class MapScreen extends ConsumerWidget {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(attraction.kinds.split(',').first),
+                                Text(kindsText),
                                 const SizedBox(height: 8),
                                 Text(
                                   "Miasto: $currentCity",

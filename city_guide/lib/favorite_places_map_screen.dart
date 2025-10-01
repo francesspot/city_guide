@@ -4,14 +4,14 @@ import "package:flutter_map/flutter_map.dart";
 import "package:go_router/go_router.dart";
 import "package:latlong2/latlong.dart";
 import "favorite_places_details_screen.dart";
-import "features/providers/favorite_places_provider.dart";
+import "features/providers/filter_providers.dart";
 
 class FavoritePlacesMapScreen extends ConsumerWidget {
   const FavoritePlacesMapScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favoritesAsync = ref.watch(favoritesProvider);
+    final favoritesAsync = ref.watch(filteredFavoritesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -30,7 +30,7 @@ class FavoritePlacesMapScreen extends ConsumerWidget {
               Text('Błąd: $error'),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => ref.invalidate(favoritesProvider),
+                onPressed: () => ref.invalidate(filteredFavoritesProvider),
                 child: const Text('Spróbuj ponownie'),
               ),
             ],
@@ -43,15 +43,15 @@ class FavoritePlacesMapScreen extends ConsumerWidget {
             );
           }
 
-          final cities = favorites.map((place) => place.city).toSet();
-          final hasMultipleCities = cities.length > 1;
-
           final avgLat =
               favorites.map((a) => a.lat).reduce((a, b) => a + b) /
               favorites.length;
           final avgLon =
               favorites.map((a) => a.lon).reduce((a, b) => a + b) /
               favorites.length;
+
+          final cities = favorites.map((place) => place.city).toSet();
+          final hasMultipleCities = cities.length > 1;
 
           return FlutterMap(
             options: MapOptions(
@@ -65,6 +65,18 @@ class FavoritePlacesMapScreen extends ConsumerWidget {
               ),
               MarkerLayer(
                 markers: favorites.map((place) {
+                  final kindsText = (place.kinds ?? '')
+                      .split(',')
+                      .map((e) => e.trim())
+                      .where((s) => s.isNotEmpty)
+                      .join(', ');
+                  final kindsDisplay = kindsText.isNotEmpty
+                      ? kindsText
+                      : 'Brak kategorii';
+                  final cityDisplay = place.city.isNotEmpty
+                      ? place.city
+                      : 'Nieznane';
+
                   return Marker(
                     width: 40,
                     height: 40,
@@ -84,10 +96,10 @@ class FavoritePlacesMapScreen extends ConsumerWidget {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(place.kinds ?? 'Brak kategorii'),
+                                Text(kindsDisplay),
                                 const SizedBox(height: 8),
                                 Text(
-                                  "Miasto: ${place.city.isNotEmpty ? place.city : 'Nieznane'}",
+                                  "Miasto: $cityDisplay",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey,
