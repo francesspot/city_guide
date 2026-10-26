@@ -1,33 +1,28 @@
-[Polski](README.md) | **English**
+🇵🇱 [Polski](README.md) | 🇬🇧 **English**
 
-# City Guide
+# 🏙️ City Guide
 
-A Flutter mobile app for discovering **tourist attractions in any city**. You type a city name, and the app fetches nearby places from the [OpenTripMap](https://opentripmap.io) API, shows them on a list and a map, and lets you save favourites for later. The interface is in Polish.
+![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=white) ![Dart](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white) ![Riverpod](https://img.shields.io/badge/Riverpod-00B4AB) ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
 
-## Features
+> 🎓 Project from the mobile track of the **Summer Challenge 2025** (*Wakacyjne Wyzwanie*) run by the **KN Solvro** student research group (Wrocław University of Science and Technology)
 
-- **City search** — attractions within a chosen radius of the city centre, with a history of recently searched cities.
-- **Filters** — by attraction category (loaded from the OpenTripMap category tree) and by search radius.
-- **Attraction details** — description, category and location on a map.
-- **Map view** — all attractions of the current city on an OpenStreetMap map.
-- **Favourites** — saved in a local SQLite database, with their own list, details screen and map.
-- **Themes** — light, dark or follow the system; the choice is remembered.
+Your guide to any city 🧭 — type in a name and the app shows nearby attractions on a list and a map. Save the best spots to favourites and keep them at hand, even offline. ❤️
 
-## Tech stack
+## ✨ Features
 
-- **State management:** Riverpod 3 (with code generation)
-- **Navigation:** go_router
-- **Networking:** Dio
-- **Maps:** flutter_map + latlong2 (OpenStreetMap tiles)
-- **Local database:** Drift (SQLite)
-- **Models:** freezed + json_serializable
-- **Settings:** shared_preferences
+- 🔎 **City search** with recent-search history
+- 🎛️ **Filters** — attraction category and search radius
+- 🗺️ **Map** of attractions (OpenStreetMap) and a details screen with a description
+- ❤️ **Favourites** stored in a local SQLite database, with their own map
+- 🌗 **Theme** — light, dark or system, remembered between launches
 
-The code is organised by layers in `lib/features/`: `models`, `repositories`, `providers`, `database`, `routing` and `themes`. Screens are in `lib/`.
+## 🛠️ Tech
 
-## Running
+Flutter · **Riverpod 3** (with code generation) · **go_router** · **Dio** · **Drift** (SQLite) · **flutter_map** · **freezed** · OpenTripMap API
 
-The Flutter project is in the `city_guide/` subfolder. Generated files (`*.g.dart`, `*.freezed.dart`) are not committed, so generate them before the first run:
+The code is split into layers: models, repositories, providers, database, routing and themes.
+
+## 🚀 Run it
 
 ```bash
 cd city_guide
@@ -36,4 +31,4 @@ dart run build_runner build --delete-conflicting-outputs
 flutter run
 ```
 
-Requires Flutter with Dart SDK 3.9 or newer.
+The interface is in Polish.

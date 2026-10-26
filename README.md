@@ -1,33 +1,28 @@
-**Polski** | [English](README.en.md)
+🇵🇱 **Polski** | 🇬🇧 [English](README.en.md)
 
-# City Guide
+# 🏙️ City Guide
 
-Aplikacja mobilna we Flutterze do odkrywania **atrakcji turystycznych w dowolnym mieście**. Wpisujesz nazwę miasta, a aplikacja pobiera pobliskie miejsca z API [OpenTripMap](https://opentripmap.io), pokazuje je na liście i na mapie oraz pozwala zapisać ulubione na później.
+![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=white) ![Dart](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white) ![Riverpod](https://img.shields.io/badge/Riverpod-00B4AB) ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
 
-## Funkcje
+> 🎓 Projekt ze ścieżki mobilnej **Wakacyjnego Wyzwania 2025** koła naukowego **KN Solvro** (Politechnika Wrocławska)
 
-- **Wyszukiwanie miasta** — atrakcje w wybranym promieniu od centrum, z historią ostatnio wyszukiwanych miast.
-- **Filtry** — według kategorii atrakcji (pobieranych z drzewa kategorii OpenTripMap) i promienia wyszukiwania.
-- **Szczegóły atrakcji** — opis, kategoria i lokalizacja na mapie.
-- **Widok mapy** — wszystkie atrakcje bieżącego miasta na mapie OpenStreetMap.
-- **Ulubione** — zapisywane w lokalnej bazie SQLite, z osobną listą, ekranem szczegółów i mapą.
-- **Motywy** — jasny, ciemny lub zgodny z systemem; wybór jest zapamiętywany.
+Twój przewodnik po dowolnym mieście 🧭 — wpisujesz nazwę, a aplikacja pokazuje okoliczne atrakcje na liście i na mapie. Najciekawsze miejsca zapisujesz do ulubionych i masz je zawsze pod ręką, także offline. ❤️
 
-## Technologie
+## ✨ Funkcje
 
-- **Zarządzanie stanem:** Riverpod 3 (z generowaniem kodu)
-- **Nawigacja:** go_router
-- **Sieć:** Dio
-- **Mapy:** flutter_map + latlong2 (kafelki OpenStreetMap)
-- **Lokalna baza danych:** Drift (SQLite)
-- **Modele:** freezed + json_serializable
-- **Ustawienia:** shared_preferences
+- 🔎 **Wyszukiwanie miasta** z historią ostatnich wyszukiwań
+- 🎛️ **Filtry** — kategoria atrakcji i promień wyszukiwania
+- 🗺️ **Mapa** atrakcji (OpenStreetMap) i ekran szczegółów z opisem
+- ❤️ **Ulubione** zapisywane w lokalnej bazie SQLite, z osobną mapą
+- 🌗 **Motyw** jasny, ciemny albo systemowy — zapamiętywany
 
-Kod jest podzielony na warstwy w `lib/features/`: `models`, `repositories`, `providers`, `database`, `routing` i `themes`. Ekrany znajdują się w `lib/`.
+## 🛠️ Technologie
 
-## Uruchomienie
+Flutter · **Riverpod 3** (z generowaniem kodu) · **go_router** · **Dio** · **Drift** (SQLite) · **flutter_map** · **freezed** · API OpenTripMap
 
-Projekt Fluttera jest w podfolderze `city_guide/`. Pliki generowane (`*.g.dart`, `*.freezed.dart`) nie są w repozytorium, więc przed pierwszym uruchomieniem trzeba je wygenerować:
+Kod podzielony na warstwy: modele, repozytoria, providery, bazę danych, routing i motywy.
+
+## 🚀 Uruchomienie
 
 ```bash
 cd city_guide
@@ -35,5 +30,3 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 flutter run
 ```
-
-Wymagany Flutter z Dart SDK 3.9 lub nowszym.
