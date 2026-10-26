@@ -6,15 +6,15 @@
 
 > 🎓 Projekt ze ścieżki mobilnej **Wakacyjnego Wyzwania 2025** koła naukowego **KN Solvro** (Politechnika Wrocławska)
 
-Twój przewodnik po dowolnym mieście 🧭 — wpisujesz nazwę, a aplikacja pokazuje okoliczne atrakcje na liście i na mapie. Najciekawsze miejsca zapisujesz do ulubionych i masz je zawsze pod ręką, także offline. ❤️
+Aplikacja mobilna do odkrywania atrakcji turystycznych w dowolnym mieście. Po wpisaniu nazwy miasta pokazuje okoliczne atrakcje na liście i na mapie, a wybrane miejsca można zapisać lokalnie w ulubionych.
 
 ## ✨ Funkcje
 
-- 🔎 **Wyszukiwanie miasta** z historią ostatnich wyszukiwań
-- 🎛️ **Filtry** — kategoria atrakcji i promień wyszukiwania
-- 🗺️ **Mapa** atrakcji (OpenStreetMap) i ekran szczegółów z opisem
-- ❤️ **Ulubione** zapisywane w lokalnej bazie SQLite, z osobną mapą
-- 🌗 **Motyw** jasny, ciemny albo systemowy — zapamiętywany
+- **Wyszukiwanie miasta** z historią ostatnich wyszukiwań
+- **Filtry** — kategoria atrakcji i promień wyszukiwania
+- **Mapa** atrakcji (OpenStreetMap) i ekran szczegółów z opisem
+- **Ulubione** zapisywane w lokalnej bazie SQLite, z osobną mapą
+- **Motyw** jasny, ciemny albo systemowy — zapamiętywany
 
 ## 🛠️ Technologie
 

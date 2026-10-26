@@ -6,15 +6,15 @@
 
 > 🎓 Project from the mobile track of the **Summer Challenge 2025** (*Wakacyjne Wyzwanie*) run by the **KN Solvro** student research group (Wrocław University of Science and Technology)
 
-Your guide to any city 🧭 — type in a name and the app shows nearby attractions on a list and a map. Save the best spots to favourites and keep them at hand, even offline. ❤️
+A mobile app for discovering tourist attractions in any city. Enter a city name to see nearby attractions on a list and a map, and save chosen places to locally stored favourites.
 
 ## ✨ Features
 
-- 🔎 **City search** with recent-search history
-- 🎛️ **Filters** — attraction category and search radius
-- 🗺️ **Map** of attractions (OpenStreetMap) and a details screen with a description
-- ❤️ **Favourites** stored in a local SQLite database, with their own map
-- 🌗 **Theme** — light, dark or system, remembered between launches
+- **City search** with recent-search history
+- **Filters** — attraction category and search radius
+- **Map** of attractions (OpenStreetMap) and a details screen with a description
+- **Favourites** stored in a local SQLite database, with their own map
+- **Theme** — light, dark or system, remembered between launches
 
 ## 🛠️ Tech
 
